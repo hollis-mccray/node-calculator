@@ -1,34 +1,37 @@
-var readlineSync = require('readline-sync');
-let result = '';
+const readlineSync = require('readline-sync');
+const operationList = {
+  '/': (x, y) => x / y,
+  '*': (x, y) => x * y,
+  '-': (x, y) => x - y,
+  '+': (x, y) => x + y,
+};
 
-let operand = readlineSync.keyIn(
-  'What operation would you like to perform? [/,*,-,+] '
-);
+function evaluator(operations, operator, num1, num2) {
+  return operations[operator](num1, num2);
+}
 
-while (!['/', '*', '-', '+'].includes(operand)) {
-  console.log('That is not a valid operation');
-  operand = readlineSync.keyIn(
-    'What operation would you like to perform? [/,*,-,+] '
+function calculateResult(operations) {
+  operators = Object.keys(operations);
+
+  const operator = readlineSync.question(
+    `What operation would you like to perform? [${operators.join(', ')}] `,
+    {
+      limit: operators,
+      limitMessage: 'That is not a valid operation',
+    }
   );
+
+  const numOne = readlineSync.questionInt('Please enter the first number: ', {
+    limitMessage: 'This is not a number',
+  });
+
+  const numTwo = readlineSync.questionInt('Please enter the second number: ', {
+    limitMessage: 'This is not a number',
+  });
+
+  result = evaluator(operations, operator, numOne, numTwo);
+
+  console.log(`The result is: ${result}`);
 }
 
-let numOne = readlineSync.questionInt('Please enter the first number: ', {
-  limit: 'This is not a number',
-});
-
-let numTwo = readlineSync.questionInt('Please enter the second number: ', {
-  limit: 'This is not a number',
-});
-
-console.log(numOne);
-console.log(numTwo);
-
-if (operand === '/') {
-  result = numOne / numTwo;
-} else if (operand === '*') {
-  result = numOne * numTwo;
-} else if (operand === '+') {
-  result = numOne + numTwo;
-} else if (operator === '-') {
-  result = numOne - numTwo;
-}
+calculateResult(operationList);
